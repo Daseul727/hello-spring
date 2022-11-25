@@ -2,11 +2,13 @@ package hello.hellospring.service;
 
 import hello.hellospring.domain.Member;
 import hello.hellospring.repository.MemberRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional //트랜젝션을 먼저 띄우고 db insert 하고 트랜젝션닫아서 테스트데이터 롤백
@@ -27,7 +29,7 @@ public class MemberServiceIntegrationTest {
 
         //then
         Member result = memberService.findOne(saveId).get();
-        Assertions.assertThat(member.getName()).isEqualTo(result.getName());
+        assertThat(member.getName()).isEqualTo(result.getName());
     }
 
     @Test
@@ -40,7 +42,8 @@ public class MemberServiceIntegrationTest {
 
         //when
         memberService.join(member1);
-        org.junit.jupiter.api.Assertions
-                .assertThrows(IllegalStateException.class,() -> memberService.join(member2));
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+        assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
+
     }
 }
